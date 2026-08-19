@@ -2,6 +2,7 @@ import Link from "next/link";
 import { site } from "@/shared/config";
 import { locales, type Dictionary, type Locale } from "@/shared/i18n";
 import { Container } from "@/shared/ui";
+import { HeaderMobileNav } from "./header-mobile-nav";
 import { ScrollTopLink } from "./scroll-top-link";
 
 type HeaderProps = {
@@ -20,8 +21,9 @@ export function Header({ locale, nav, viewCv }: HeaderProps) {
         <ScrollTopLink className="shrink-0 text-sm font-extrabold tracking-[-0.04em]">
           {site.shortName}
         </ScrollTopLink>
-        <div className="flex items-center gap-6 max-[900px]:gap-3">
-          <nav className="flex gap-7 text-[11px] font-extrabold tracking-[0.1em] max-[900px]:gap-3 max-[600px]:text-[9px]">
+
+        <div className="hidden items-center gap-6 min-[901px]:flex">
+          <nav className="flex gap-7 text-[11px] font-extrabold tracking-[0.1em]">
             {nav.map((item) => (
               <a
                 key={item.href}
@@ -34,11 +36,11 @@ export function Header({ locale, nav, viewCv }: HeaderProps) {
           </nav>
           <Link
             href={`/${locale}/cv`}
-            className="rounded-full bg-text px-3.5 py-2 text-white text-[11px] font-extrabold tracking-[0.08em] transition-colors duration-200 hover:bg-[#383838] max-[600px]:px-2.5 max-[600px]:text-[9px]"
+            className="rounded-full bg-text px-3.5 py-2 text-[11px] font-extrabold tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[#383838]"
           >
             {viewCv}
           </Link>
-          <div className="flex gap-2 text-[11px] font-extrabold tracking-[0.1em] max-[600px]:text-[9px]">
+          <div className="flex gap-2 text-[11px] font-extrabold tracking-[0.1em]">
             {locales.map((item) => (
               <Link
                 key={item}
@@ -53,6 +55,16 @@ export function Header({ locale, nav, viewCv }: HeaderProps) {
               </Link>
             ))}
           </div>
+        </div>
+
+        <div className="flex items-center gap-3 min-[901px]:hidden">
+          <Link
+            href={`/${locale}/cv`}
+            className="rounded-full bg-text px-3 py-2 text-[10px] font-extrabold tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[#383838]"
+          >
+            {viewCv}
+          </Link>
+          <HeaderMobileNav nav={nav} locale={locale} />
         </div>
       </Container>
     </header>

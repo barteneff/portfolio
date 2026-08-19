@@ -5,7 +5,6 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Bounds,
   Center,
-  ContactShadows,
   Environment,
   Lightformer,
   MeshTransmissionMaterial,
@@ -28,7 +27,7 @@ function GlassUser() {
 
   return (
     <Center>
-      <mesh geometry={plane.geometry} quaternion={plane.quaternion} castShadow>
+      <mesh geometry={plane.geometry} quaternion={plane.quaternion} castShadow={false}>
         <MeshTransmissionMaterial
           backside
           samples={4}
@@ -179,13 +178,6 @@ export function HeroScene({ active = true }: { active?: boolean }) {
           <Rig reduced={reduced} />
         </Bounds>
       </Suspense>
-      <ContactShadows
-        position={[0, -1.05, 0]}
-        opacity={0.2}
-        scale={7}
-        blur={2.6}
-        far={2.8}
-      />
     </Canvas>
   );
 }

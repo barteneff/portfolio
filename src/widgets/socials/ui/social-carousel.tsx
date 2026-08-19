@@ -107,7 +107,7 @@ export function SocialCarousel({
       </nav>
 
       <div className="grid grid-cols-1 items-center gap-10 min-[901px]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.15fr)] min-[901px]:gap-8 min-[901px]:min-h-[560px]">
-        <div className="max-w-[460px]">
+        <div className="w-full max-w-[460px]">
           <SectionLabel className="mb-6">{label}</SectionLabel>
           <div key={item.id}>
             <h2 className="m-0 text-[clamp(44px,7vw,76px)] leading-[0.88] font-extrabold tracking-[-0.06em]">
@@ -118,12 +118,12 @@ export function SocialCarousel({
             </p>
           </div>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="mt-8 flex w-full items-center justify-between gap-3 min-[901px]:w-auto min-[901px]:justify-start">
             <a
               href={item.href}
               target={external ? "_blank" : undefined}
               rel={external ? "noopener noreferrer" : undefined}
-              className="rounded-full bg-text px-[22px] py-4 text-[11px] font-extrabold tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[#383838]"
+              className="inline-flex min-w-[148px] items-center justify-center rounded-full bg-text px-10 py-3 text-[11px] font-extrabold tracking-[0.08em] text-white transition-colors duration-200 hover:bg-[#383838]"
             >
               {open}
             </a>

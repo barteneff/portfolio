@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { site } from "@/shared/config";
 import { locales, type Dictionary, type Locale } from "@/shared/i18n";
+import { CvLocaleSwitch } from "./cv-locale-switch";
 import { DownloadPdf } from "./download-pdf";
+
+const CHEVRON_LEFT_ICON =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tbGVmdC1pY29uIGx1Y2lkZS1jaGV2cm9uLWxlZnQiPjxwYXRoIGQ9Im0xNSAxOC02LTYgNi02Ii8+PC9zdmc+";
 
 type CvSheetProps = {
   locale: Locale;
@@ -17,12 +21,27 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
         <div className="no-print mb-10 flex flex-wrap items-center justify-between gap-4">
           <Link
             href={`/${locale}`}
-            className="text-[11px] font-extrabold tracking-[0.08em] opacity-50 transition-opacity hover:opacity-100"
+            aria-label={cv.back}
+            className="inline-flex items-center opacity-50 transition-opacity hover:opacity-100"
           >
-            {cv.back}
+            <span className="hidden items-center gap-2 text-[11px] font-extrabold tracking-[0.08em] min-[601px]:inline-flex">
+              <img
+                src={CHEVRON_LEFT_ICON}
+                alt=""
+                className="h-[18px] w-[18px]"
+              />
+              {cv.back}
+            </span>
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line min-[601px]:hidden">
+              <img
+                src={CHEVRON_LEFT_ICON}
+                alt=""
+                className="h-[18px] w-[18px]"
+              />
+            </span>
           </Link>
           <div className="flex items-center gap-4">
-            <div className="flex gap-2 text-[11px] font-extrabold tracking-[0.1em]">
+            <div className="hidden gap-2 text-[11px] font-extrabold tracking-[0.1em] min-[601px]:flex">
               {locales.map((item) => (
                 <Link
                   key={item}
@@ -36,6 +55,9 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
                   {item.toUpperCase()}
                 </Link>
               ))}
+            </div>
+            <div className="min-[601px]:hidden">
+              <CvLocaleSwitch locale={locale} />
             </div>
             <DownloadPdf label={cv.download} />
           </div>

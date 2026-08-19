@@ -17,7 +17,7 @@ export const dictionary: Dictionary = {
     eyebrow: "Frontend Developer",
     stackLine: "React · Next.js · TypeScript",
     description:
-      "I build complex web interfaces, business logic and scalable frontend applications.",
+      "I build complex web interfaces, business logic and scalable frontend architecture.",
     getInTouch: "GET IN TOUCH",
   },
   about: {
@@ -197,7 +197,7 @@ export const dictionary: Dictionary = {
   },
   cv: {
     title: "Ruslan Bartenev — CV",
-    back: "← BACK TO PORTFOLIO",
+    back: "BACK TO PORTFOLIO",
     download: "DOWNLOAD PDF ↗",
     aboutLabel: "Profile",
     about: [

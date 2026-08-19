@@ -21,7 +21,7 @@ export function Hero({ locale, hero, viewCv }: HeroProps) {
           <p className="mb-6 text-[11px] font-extrabold tracking-[0.16em] text-muted uppercase">
             {hero.stackLine}
           </p>
-          <h1 className="m-0 text-[clamp(76px,11vw,158px)] leading-[0.79] font-extrabold tracking-[-0.085em] max-[600px]:text-[clamp(68px,20vw,112px)]">
+          <h1 className="m-0 max-w-full text-[clamp(76px,11vw,158px)] leading-[0.79] font-extrabold tracking-[-0.085em] max-[600px]:text-[clamp(46px,13.2vw,72px)] max-[600px]:tracking-[-0.06em] max-[380px]:text-[clamp(42px,12vw,58px)]">
             {site.firstName}
             <br />
             {site.lastName}
