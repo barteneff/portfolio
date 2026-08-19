@@ -31,8 +31,8 @@ function GlassUser() {
       <mesh geometry={plane.geometry} quaternion={plane.quaternion} castShadow>
         <MeshTransmissionMaterial
           backside
-          samples={8}
-          resolution={256}
+          samples={4}
+          resolution={128}
           thickness={2.2}
           roughness={0.08}
           chromaticAberration={0.025}
@@ -58,7 +58,7 @@ function PhotoEnvironment() {
   photo.wrapT = THREE.ClampToEdgeWrapping;
 
   return (
-    <Environment frames={1} resolution={256} environmentIntensity={1.5}>
+    <Environment frames={1} resolution={128} environmentIntensity={1.5}>
       <Lightformer
         form="rect"
         intensity={5}
@@ -140,16 +140,17 @@ function Rig({ reduced }: { reduced: boolean }) {
   );
 }
 
-export function HeroScene() {
+export function HeroScene({ active = true }: { active?: boolean }) {
   const reduced =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const running = active && !reduced;
 
   return (
     <Canvas
       className="h-full w-full touch-none"
-      dpr={[1, 1.5]}
-      frameloop={reduced ? "demand" : "always"}
+      dpr={[1, 1.25]}
+      frameloop={running ? "always" : "demand"}
       gl={{ antialias: true, alpha: true }}
       camera={{ position: [0, 0.12, 2.6], fov: 32 }}
       onCreated={({ gl }) => {

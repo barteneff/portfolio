@@ -14,7 +14,6 @@ export type Social = {
   glow: string;
   color: string;
   model?: string;
-  accent?: string;
 };
 
 export const socials: Social[] = [
@@ -27,7 +26,6 @@ export const socials: Social[] = [
     glow: "inset 0 -80px 100px rgba(36, 102, 255, 0.10)",
     color: "#0077B5",
     model: "/model/linked.glb",
-    accent: "#FFFFFF"
   },
   {
     id: "telegram",
@@ -38,7 +36,6 @@ export const socials: Social[] = [
     glow: "inset 0 -80px 100px rgba(36, 217, 255, 0.10)",
     color: "#2AABEE",
     model: "/model/telegram.glb",
-    accent: "#FFFFFF"
   },
   {
     id: "github",
@@ -48,8 +45,7 @@ export const socials: Social[] = [
     href: "https://github.com/barteneff",
     model: "/model/github.glb",
     glow: "inset 0 -80px 100px rgba(17, 17, 17, 0.09)",
-    color: "#24292e",
-    accent: "#FFFFFF"
+    color: "#101010",
   },
   {
     id: "instagram",
@@ -58,9 +54,8 @@ export const socials: Social[] = [
     icon: "◎",
     href: "https://www.instagram.com/npm_ruslan/",
     glow: "inset 0 -80px 100px rgba(255, 60, 180, 0.10)",
-    color: "#c13584",
+    color: "#f4b8d4",
     model: "/model/inst.glb",
-    accent: "#E1306C",
   },
   {
     id: "youtube",
@@ -69,8 +64,7 @@ export const socials: Social[] = [
     icon: "▶",
     href: "https://www.youtube.com/@bartenevv",
     glow: "inset 0 -80px 100px rgba(255, 0, 48, 0.10)",
-    color: "#c4302b",
+    color: "#c81612",
     model: "/model/youtube.glb",
-    accent: "#FFFFFF",
   },
 ];

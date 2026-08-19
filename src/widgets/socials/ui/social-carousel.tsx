@@ -1,9 +1,9 @@
 "use client";
 
-import { Component, useRef, useState, type ReactNode } from "react";
+import { Component, useCallback, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { SectionLabel } from "@/shared/ui";
-import type { CarouselHandle, CarouselItem } from "./carousel-api";
+import type { SocialItem } from "./carousel-api";
 
 const SocialScene = dynamic(
   () => import("./social-scene").then((mod) => mod.SocialScene),
@@ -11,14 +11,14 @@ const SocialScene = dynamic(
 );
 
 type SocialCarouselProps = {
-  items: CarouselItem[];
+  items: SocialItem[];
   label: string;
   prev: string;
   next: string;
   open: string;
 };
 
-function LinksFallback({ items }: { items: CarouselItem[] }) {
+function LinksFallback({ items }: { items: SocialItem[] }) {
   return (
     <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-extrabold">
       {items.map((item) => (
@@ -28,7 +28,7 @@ function LinksFallback({ items }: { items: CarouselItem[] }) {
   );
 }
 
-function SocialLink({ item }: { item: CarouselItem }) {
+function SocialLink({ item }: { item: SocialItem }) {
   const external = item.href.startsWith("http");
   return (
     <a
@@ -66,9 +66,20 @@ export function SocialCarousel({
   next,
   open,
 }: SocialCarouselProps) {
-  const handleRef = useRef<CarouselHandle | null>(null);
   const [active, setActive] = useState(0);
+  const count = items.length;
   const item = items[active] ?? items[0];
+
+  const step = useCallback(
+    (direction: number) => {
+      setActive((current) => (current + direction + count) % count);
+    },
+    [count],
+  );
+
+  const goTo = useCallback((index: number) => {
+    setActive(index);
+  }, []);
 
   if (!item) return null;
 
@@ -78,16 +89,14 @@ export function SocialCarousel({
     <div
       className="outline-none"
       tabIndex={0}
-      onMouseEnter={() => handleRef.current?.setHover(true)}
-      onMouseLeave={() => handleRef.current?.setHover(false)}
       onKeyDown={(event) => {
         if (event.key === "ArrowLeft") {
           event.preventDefault();
-          handleRef.current?.step(-1);
+          step(-1);
         }
         if (event.key === "ArrowRight") {
           event.preventDefault();
-          handleRef.current?.step(1);
+          step(1);
         }
       }}
     >
@@ -122,18 +131,24 @@ export function SocialCarousel({
               <button
                 type="button"
                 aria-label={prev}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-sm font-extrabold transition-opacity hover:opacity-60"
-                onClick={() => handleRef.current?.step(-1)}
+                className="cursor-pointer flex h-11 w-11 items-center justify-center rounded-full border border-line text-sm font-extrabold transition-opacity hover:opacity-60"
+                onClick={() => step(-1)}
               >
-                ←
+                <img
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tbGVmdC1pY29uIGx1Y2lkZS1jaGV2cm9uLWxlZnQiPjxwYXRoIGQ9Im0xNSAxOC02LTYgNi02Ii8+PC9zdmc+"
+                  alt=""
+                />
               </button>
               <button
                 type="button"
                 aria-label={next}
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-line text-sm font-extrabold transition-opacity hover:opacity-60"
-                onClick={() => handleRef.current?.step(1)}
+                className="cursor-pointer flex h-11 w-11 items-center justify-center rounded-full border border-line text-sm font-extrabold transition-opacity hover:opacity-60"
+                onClick={() => step(1)}
               >
-                →
+                <img
+                  src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tcmlnaHQtaWNvbiBsdWNpZGUtY2hldnJvbi1yaWdodCI+PHBhdGggZD0ibTkgMTggNi02LTYtNiIvPjwvc3ZnPg=="
+                  alt=""
+                />
               </button>
             </div>
           </div>
@@ -144,9 +159,11 @@ export function SocialCarousel({
                 key={entry.id}
                 type="button"
                 aria-current={index === active ? "true" : undefined}
-                className="text-[11px] font-extrabold tracking-[0.08em] uppercase transition-opacity"
-                style={{ opacity: index === active ? 1 : 0.38 }}
-                onClick={() => handleRef.current?.goTo(index)}
+                className={`cursor-pointer text-[11px] font-extrabold tracking-[0.08em] uppercase transition-[opacity,color] duration-200 ${index === active
+                  ? "opacity-100"
+                  : "opacity-[0.38] hover:opacity-80 hover:text-text"
+                  }`}
+                onClick={() => goTo(index)}
               >
                 {entry.name}
               </button>
@@ -156,11 +173,7 @@ export function SocialCarousel({
 
         <div className="relative h-[min(520px,78vw)] min-h-[320px] w-full max-[600px]:h-[min(380px,88vw)]">
           <SceneBoundary fallback={<LinksFallback items={items} />}>
-            <SocialScene
-              items={items}
-              handleRef={handleRef}
-              onActiveChange={setActive}
-            />
+            <SocialScene item={item} />
           </SceneBoundary>
         </div>
       </div>

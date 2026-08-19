@@ -1,45 +1,24 @@
 "use client";
 
 import type { MutableRefObject } from "react";
-import {
-  Suspense,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Center,
   Environment,
   Lightformer,
   MeshTransmissionMaterial,
-  Resize,
   RoundedBox,
   useGLTF,
 } from "@react-three/drei";
 import * as THREE from "three";
-import {
-  carouselGoTo,
-  carouselStep,
-  createCarouselApi,
-  type CarouselApi,
-  type CarouselHandle,
-  type CarouselItem,
-} from "./carousel-api";
+import type { SocialItem } from "./carousel-api";
 
 const FACE_Y = Math.PI / 2;
-const AUTO_GAP = 4800;
+const TRANSITION_SEC = 0.82;
+const REST_Y = -0.05;
+const REST_X = 0.05;
 const WHITE = new THREE.Color("#ffffff");
-
-/**
- *
- * Свет идёт слева направо: главное окно слева (windowLeft).
- * Стекло почти не видит key/rim/fill — крути windowLeft.
- *
- * [x, y, z]: x вправо, y вверх, z к камере.
- */
 
 const LIGHT = {
   showAxes: false,
@@ -85,72 +64,86 @@ const LIGHT = {
 };
 
 const GLASS = {
-  samples: 5,
-  resolution: 256,
+  samples: 3,
+  resolution: 128,
   thickness: 2.2,
   roughness: 0.08,
   chromaticAberration: 0.025,
   envMapIntensity: 2.2,
   background: "#f8f8f8",
+  ior: 1.5,
+  distortion: 0.06,
+  distortionScale: 0.18,
+  anisotropy: 0.15,
+  fadeWhiteLerp: 0.72,
 };
 
-function wrappedDelta(index: number, progress: number, count: number) {
-  let delta = index - progress;
-  delta = ((delta % count) + count) % count;
-  if (delta >= count / 2) delta -= count;
-  return delta;
+type GlassTune = {
+  roughness: number;
+  thickness: number;
+  chromaticAberration: number;
+  envMapIntensity: number;
+  ior: number;
+  distortion: number;
+  distortionScale: number;
+  anisotropy: number;
+  fadeWhiteLerp: number;
+};
+
+type GlassProfile = {
+  color: string;
+  tune: GlassTune;
+};
+
+const SOCIAL_GLASS: GlassTune = {
+  roughness: 0.028,
+  thickness: 2.6,
+  chromaticAberration: 0.02,
+  envMapIntensity: 3.0,
+  ior: 1.8,
+  distortion: 0.035,
+  distortionScale: 0.11,
+  anisotropy: 0.12,
+  fadeWhiteLerp: 0.24,
+};
+
+function resolveGlassProfile(item: SocialItem): GlassProfile {
+  return { color: item.color, tune: SOCIAL_GLASS };
 }
 
-function activeIndex(progress: number, count: number) {
-  return ((Math.round(progress) % count) + count) % count;
+function ease(t: number) {
+  return THREE.MathUtils.smootherstep(t, 0, 1);
 }
 
-function neighbors(center: number, count: number) {
-  return [(center - 1 + count) % count, center, (center + 1) % count];
-}
-
-function pose(delta: number) {
-  const incoming = Math.max(delta, 0);
-  const outgoing = Math.max(-delta, 0);
-
-  return {
-    x: outgoing * 2.4,
-    y: outgoing * 0.14,
-    z: outgoing * 2.5 + incoming * 0.35,
-    scale: Math.max(
-      0.12,
-      0.86 * (1 - incoming * 0.18) * (1 + outgoing * 0.04),
-    ),
-    opacity: THREE.MathUtils.clamp(
-      delta >= 0 ? 1 - incoming * 1.4 : 1 - outgoing * 1.2,
-      0,
-      1,
-    ),
-    rotX: 0.05 + outgoing * 0.08,
-    rotY: -outgoing * 0.32,
-  };
-}
-
-function liftTint(hex: string) {
+function resolveTint(hex: string) {
   const color = new THREE.Color(hex);
   const hsl = { h: 0, s: 0, l: 0 };
   color.getHSL(hsl);
-  if (hsl.l < 0.28) {
-    color.setHSL(hsl.h, hsl.s * 0.25, 0.46);
+
+  if (hsl.s < 0.08) {
+    color.setHSL(0.58, 0.14, 0.15);
     return color;
   }
-  return color.lerp(WHITE, 0.16);
+
+  color.setHSL(
+    hsl.h,
+    Math.min(Math.max(hsl.s * 0.78, 0.48), 0.8),
+    0.17,
+  );
+  return color.lerp(WHITE, 0.06);
 }
 
 function GlassBody({
   color,
+  tune,
   fade,
 }: {
   color: string;
+  tune: GlassTune;
   fade: MutableRefObject<number>;
 }) {
   const material = useRef<THREE.MeshPhysicalMaterial | null>(null);
-  const base = useMemo(() => liftTint(color), [color]);
+  const base = useMemo(() => resolveTint(color), [color]);
   const background = useMemo(
     () => new THREE.Color(GLASS.background),
     [],
@@ -161,8 +154,8 @@ function GlassBody({
     if (!mat) return;
     const opacity = fade.current;
     mat.opacity = Math.max(opacity, 0.05);
-    mat.envMapIntensity = GLASS.envMapIntensity * opacity;
-    mat.color.copy(base).lerp(WHITE, (1 - opacity) * 0.72);
+    mat.envMapIntensity = tune.envMapIntensity * opacity;
+    mat.color.copy(base).lerp(WHITE, (1 - opacity) * tune.fadeWhiteLerp);
   });
 
   return (
@@ -173,17 +166,17 @@ function GlassBody({
       backside
       samples={GLASS.samples}
       resolution={GLASS.resolution}
-      thickness={GLASS.thickness}
-      roughness={GLASS.roughness}
-      chromaticAberration={GLASS.chromaticAberration}
-      anisotropy={0.15}
-      distortion={0.06}
-      distortionScale={0.18}
+      thickness={tune.thickness}
+      roughness={tune.roughness}
+      chromaticAberration={tune.chromaticAberration}
+      anisotropy={tune.anisotropy}
+      distortion={tune.distortion}
+      distortionScale={tune.distortionScale}
       temporalDistortion={0}
       color={base}
       transmission={1}
-      ior={1.5}
-      envMapIntensity={GLASS.envMapIntensity}
+      ior={tune.ior}
+      envMapIntensity={tune.envMapIntensity}
       background={background}
       transparent
       opacity={1}
@@ -197,214 +190,209 @@ function useGlassParts(src: string) {
   return useMemo(() => {
     const root = gltf.scene.clone(true);
     root.updateMatrixWorld(true);
-    const parts: { geometry: THREE.BufferGeometry; name: string }[] = [];
+    const parts: THREE.BufferGeometry[] = [];
 
     root.traverse((child) => {
       if (!(child instanceof THREE.Mesh)) return;
       const geometry = child.geometry.clone();
       geometry.applyMatrix4(child.matrixWorld);
-      const material = Array.isArray(child.material)
-        ? child.material[0]
-        : child.material;
-      parts.push({ geometry, name: material?.name ?? "" });
+      parts.push(geometry);
     });
 
     return parts;
   }, [gltf.scene]);
 }
 
+function useModelFitScale(parts: THREE.BufferGeometry[]) {
+  return useMemo(() => {
+    const box = new THREE.Box3();
+
+    for (const geometry of parts) {
+      geometry.computeBoundingBox();
+      if (geometry.boundingBox) box.union(geometry.boundingBox);
+    }
+
+    const size = new THREE.Vector3();
+    box.getSize(size);
+    const footprint = Math.max(size.x, size.y, 0.0001);
+
+    return 1 / footprint;
+  }, [parts]);
+}
+
 function GlassModel({
-  src,
-  color,
+  item,
   fade,
 }: {
-  src: string;
-  color: string;
+  item: SocialItem;
   fade: MutableRefObject<number>;
 }) {
-  const parts = useGlassParts(src);
+  const parts = useGlassParts(item.model!);
+  const fitScale = useModelFitScale(parts);
+  const profile = useMemo(
+    () => resolveGlassProfile(item),
+    [item.id, item.color],
+  );
 
   return (
     <group rotation={[0, FACE_Y, 0]}>
-      <group scale={1.28}>
-        <Resize depth>
-          <Center>
-            {parts.map((part, index) => (
-              <mesh key={index} geometry={part.geometry}>
-                <GlassBody
-                  color={part.name === "accent" ? "#ffffff" : color}
-                  fade={fade}
-                />
-              </mesh>
-            ))}
-          </Center>
-        </Resize>
+      <group scale={fitScale}>
+        <Center>
+          {parts.map((geometry, index) => (
+            <mesh key={index} geometry={geometry}>
+              <GlassBody
+                color={profile.color}
+                tune={profile.tune}
+                fade={fade}
+              />
+            </mesh>
+          ))}
+        </Center>
       </group>
     </group>
   );
 }
 
-function GlassCube({
-  color,
+function ItemVisual({
+  item,
   fade,
 }: {
-  color: string;
+  item: SocialItem;
   fade: MutableRefObject<number>;
 }) {
+  if (item.model) {
+    return <GlassModel item={item} fade={fade} />;
+  }
+  return <GlassCube item={item} fade={fade} />;
+}
+
+function GlassCube({
+  item,
+  fade,
+}: {
+  item: SocialItem;
+  fade: MutableRefObject<number>;
+}) {
+  const profile = useMemo(
+    () => resolveGlassProfile(item),
+    [item.id, item.color],
+  );
+
   return (
     <RoundedBox args={[0.92, 0.92, 0.92]} radius={0.07} smoothness={4}>
-      <GlassBody color={color} fade={fade} />
+      <GlassBody color={profile.color} tune={profile.tune} fade={fade} />
     </RoundedBox>
   );
 }
 
-function Item({
+function SocialModel({
   item,
-  index,
-  count,
-  api,
+  mode,
+  progressRef,
   pointer,
   reduced,
-  onSelect,
 }: {
-  item: CarouselItem;
-  index: number;
-  count: number;
-  api: MutableRefObject<CarouselApi>;
+  item: SocialItem;
+  mode: "idle" | "leave" | "enter";
+  progressRef: MutableRefObject<number>;
   pointer: MutableRefObject<{ x: number; y: number }>;
   reduced: boolean;
-  onSelect: (index: number) => void;
 }) {
   const group = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const fade = useRef(1);
 
+  useLayoutEffect(() => {
+    if (!inner.current) return;
+    if (mode === "enter") {
+      inner.current.rotation.set(REST_X + 0.02, -0.09, 0);
+      return;
+    }
+    inner.current.rotation.set(REST_X, REST_Y, 0);
+  }, [item.id, mode]);
+
   useFrame((state, frameDelta) => {
     if (!group.current || !inner.current) return;
-    const delta = wrappedDelta(index, api.current.progress, count);
-    const next = pose(delta);
-    const active = Math.abs(delta) < 0.45;
-    const bob =
-      active && !reduced ? Math.sin(state.clock.elapsedTime * 1.25) * 0.045 : 0;
 
-    fade.current = next.opacity;
-    group.current.visible = next.opacity > 0.03;
-    group.current.position.set(next.x, next.y + bob, next.z);
-    group.current.rotation.set(next.rotX, next.rotY, 0);
-    group.current.scale.setScalar(next.scale);
+    const progress = progressRef.current;
+    const t = ease(progress);
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    let scale = 1;
+    let opacity = 1;
+    let groupRotY = 0;
+    let groupRotX = REST_X;
+    const idle = mode === "idle" || (mode === "enter" && progress >= 1);
 
-    const lookY =
-      active && !reduced ? 0.16 + pointer.current.x * 0.42 : 0.16;
-    const lookX =
-      active && !reduced ? 0.05 - pointer.current.y * 0.16 : 0.05;
+    const parallaxY =
+      REST_Y + (reduced ? 0 : pointer.current.x * 0.26);
+    const parallaxX =
+      REST_X + (reduced ? 0 : -pointer.current.y * 0.12);
+
+    let targetInnerY = parallaxY;
+    let targetInnerX = parallaxX;
+
+    if (mode === "leave") {
+      x = t * 2.0;
+      y = t * 0.1;
+      z = t * 2.2;
+      scale = 1 - t * 0.1;
+      opacity = 1 - t;
+      groupRotY = -t * 0.26;
+      groupRotX = REST_X + t * 0.06;
+      targetInnerY = THREE.MathUtils.lerp(REST_Y, REST_Y - 0.14, t);
+      targetInnerX = REST_X;
+    } else if (mode === "enter") {
+      z = THREE.MathUtils.lerp(-0.38, 0, t);
+      scale = THREE.MathUtils.lerp(0.88, 1, t);
+      opacity = t;
+      const enterY = THREE.MathUtils.lerp(-0.09, REST_Y, t);
+      const parallaxBlend = t < 0.62 ? 0 : ease((t - 0.62) / 0.38);
+      targetInnerY = THREE.MathUtils.lerp(enterY, parallaxY, parallaxBlend);
+      targetInnerX = THREE.MathUtils.lerp(
+        REST_X + 0.02,
+        parallaxX,
+        parallaxBlend,
+      );
+    }
+
+    if (idle && !reduced) {
+      y += Math.sin(state.clock.elapsedTime * 1.25) * 0.045;
+    }
+
+    fade.current = opacity;
+    group.current.visible = opacity > 0.03;
+    group.current.position.set(x, y, z);
+    group.current.rotation.set(groupRotX, groupRotY, 0);
+    group.current.scale.setScalar(scale);
+
     inner.current.rotation.y = THREE.MathUtils.damp(
       inner.current.rotation.y,
-      lookY,
+      targetInnerY,
       3.4,
       frameDelta,
     );
     inner.current.rotation.x = THREE.MathUtils.damp(
       inner.current.rotation.x,
-      lookX,
+      targetInnerX,
       3.4,
       frameDelta,
     );
   });
 
   return (
-    <group
-      ref={group}
-      onClick={(event) => {
-        event.stopPropagation();
-        if (api.current.didDrag) return;
-        onSelect(index);
-      }}
-    >
+    <group ref={group}>
       <group ref={inner}>
-        {item.model ? (
-          <GlassModel src={item.model} color={item.color} fade={fade} />
-        ) : (
-          <GlassCube color={item.color} fade={fade} />
-        )}
+        <ItemVisual item={item} fade={fade} />
       </group>
     </group>
   );
 }
 
-function DragRig({ api }: { api: MutableRefObject<CarouselApi> }) {
-  const { gl } = useThree();
-
-  useEffect(() => {
-    const el = gl.domElement;
-    let pointer = 0;
-    let lastX = 0;
-    let moved = 0;
-    let snapTimer = 0;
-
-    const pause = () => {
-      api.current.pausedUntil = performance.now() + AUTO_GAP;
-    };
-
-    const snap = () => {
-      api.current.target = Math.round(api.current.target);
-    };
-
-    const down = (event: PointerEvent) => {
-      pointer = event.pointerId;
-      lastX = event.clientX;
-      moved = 0;
-      api.current.dragging = true;
-      api.current.didDrag = false;
-      pause();
-      el.setPointerCapture(event.pointerId);
-    };
-
-    const move = (event: PointerEvent) => {
-      if (pointer === 0 || event.pointerId !== pointer) return;
-      const dx = event.clientX - lastX;
-      lastX = event.clientX;
-      moved += Math.abs(dx);
-      if (moved > 6) api.current.didDrag = true;
-      api.current.target += (dx / Math.max(el.clientWidth, 1)) * 1.6;
-    };
-
-    const up = (event: PointerEvent) => {
-      if (event.pointerId !== pointer && event.type !== "pointercancel") return;
-      pointer = 0;
-      api.current.dragging = false;
-      snap();
-    };
-
-    const wheel = (event: WheelEvent) => {
-      event.preventDefault();
-      pause();
-      api.current.target += event.deltaY / 480 + event.deltaX / 480;
-      window.clearTimeout(snapTimer);
-      snapTimer = window.setTimeout(snap, 150);
-    };
-
-    el.addEventListener("pointerdown", down);
-    el.addEventListener("pointermove", move);
-    el.addEventListener("pointerup", up);
-    el.addEventListener("pointercancel", up);
-    el.addEventListener("wheel", wheel, { passive: false });
-
-    return () => {
-      window.clearTimeout(snapTimer);
-      el.removeEventListener("pointerdown", down);
-      el.removeEventListener("pointermove", move);
-      el.removeEventListener("pointerup", up);
-      el.removeEventListener("pointercancel", up);
-      el.removeEventListener("wheel", wheel);
-    };
-  }, [api, gl]);
-
-  return null;
-}
-
 function GlassEnvironment() {
   return (
-    <Environment frames={4} resolution={256} environmentIntensity={LIGHT.env}>
+    <Environment frames={4} resolution={128} environmentIntensity={LIGHT.env}>
       <Lightformer
         form="rect"
         intensity={LIGHT.roomFront.intensity}
@@ -437,23 +425,18 @@ function GlassEnvironment() {
   );
 }
 
-function Rig({
-  items,
+function SocialRig({
+  item,
   reduced,
-  handleRef,
-  onActiveChange,
 }: {
-  items: CarouselItem[];
+  item: SocialItem;
   reduced: boolean;
-  handleRef: MutableRefObject<CarouselHandle | null>;
-  onActiveChange: (index: number) => void;
 }) {
-  const api = useRef(createCarouselApi());
   const pointer = useRef({ x: 0, y: 0 });
-  const last = useRef(-1);
-  const autoAt = useRef(0);
-  const count = items.length;
-  const [center, setCenter] = useState(0);
+  const shown = useRef(item);
+  const [current, setCurrent] = useState(item);
+  const [leaving, setLeaving] = useState<SocialItem | null>(null);
+  const progress = useRef(1);
 
   useEffect(() => {
     const onMove = (event: PointerEvent) => {
@@ -464,89 +447,63 @@ function Rig({
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
 
-  useImperativeHandle(
-    handleRef,
-    () => ({
-      step: (direction: number) => carouselStep(api.current, direction),
-      goTo: (index: number) => carouselGoTo(api.current, index, count),
-      setHover: (value: boolean) => {
-        api.current.hover = value;
-      },
-    }),
-    [count],
-  );
+  useEffect(() => {
+    if (item.id === shown.current.id) return;
+    if (reduced) {
+      setLeaving(null);
+      shown.current = item;
+      setCurrent(item);
+      progress.current = 1;
+      return;
+    }
+    setLeaving(shown.current);
+    shown.current = item;
+    setCurrent(item);
+    progress.current = 0;
+  }, [item, reduced]);
 
   useFrame((_, delta) => {
-    const state = api.current;
-    const now = performance.now();
-    if (autoAt.current === 0) autoAt.current = now + AUTO_GAP;
-
-    if (now < state.pausedUntil) {
-      autoAt.current = state.pausedUntil + AUTO_GAP;
-    } else if (
-      !reduced &&
-      !state.dragging &&
-      !state.hover &&
-      now > autoAt.current
-    ) {
-      carouselStep(state, 1);
-      autoAt.current = now + AUTO_GAP;
-    }
-
-    state.progress = THREE.MathUtils.damp(
-      state.progress,
-      state.target,
-      reduced ? 16 : 3.6,
-      delta,
+    if (progress.current >= 1) return;
+    progress.current = Math.min(
+      1,
+      progress.current + delta / TRANSITION_SEC,
     );
-
-    const index = activeIndex(state.progress, count);
-    if (index !== last.current) {
-      last.current = index;
-      setCenter(index);
-      onActiveChange(index);
-    }
+    if (progress.current >= 1) setLeaving(null);
   });
+
+  const animating = leaving !== null;
 
   return (
     <>
-      <DragRig api={api} />
-      {neighbors(center, count).map((index) => {
-        const item = items[index];
-        if (!item) return null;
-        return (
-          <Item
-            key={item.id}
-            item={item}
-            index={index}
-            count={count}
-            api={api}
-            pointer={pointer}
-            reduced={reduced}
-            onSelect={(selected) => {
-              if (selected === activeIndex(api.current.progress, count)) return;
-              carouselGoTo(api.current, selected, count);
-            }}
-          />
-        );
-      })}
+      {leaving && (
+        <SocialModel
+          key={`leave-${leaving.id}`}
+          item={leaving}
+          mode="leave"
+          progressRef={progress}
+          pointer={pointer}
+          reduced={reduced}
+        />
+      )}
+      <SocialModel
+        key={`enter-${current.id}`}
+        item={current}
+        mode={animating ? "enter" : "idle"}
+        progressRef={progress}
+        pointer={pointer}
+        reduced={reduced}
+      />
     </>
   );
 }
 
 type SocialSceneProps = {
-  items: CarouselItem[];
-  handleRef: MutableRefObject<CarouselHandle | null>;
-  onActiveChange: (index: number) => void;
+  item: SocialItem;
 };
 
-export function SocialScene({
-  items,
-  handleRef,
-  onActiveChange,
-}: SocialSceneProps) {
+export function SocialScene({ item }: SocialSceneProps) {
   const root = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [reduced, setReduced] = useState(
     () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
@@ -569,12 +526,14 @@ export function SocialScene({
     return () => observer.disconnect();
   }, []);
 
+  const running = visible && !reduced;
+
   return (
-    <div ref={root} className="h-full w-full cursor-grab active:cursor-grabbing">
+    <div ref={root} className="h-full w-full">
       <Canvas
-        className="h-full w-full touch-none"
-        dpr={[1, 1.5]}
-        frameloop={reduced ? "demand" : "always"}
+        className="h-full w-full"
+        dpr={[1, 1.25]}
+        frameloop={running ? "always" : "demand"}
         gl={{ antialias: true, alpha: true }}
         camera={{ position: [0, 0.12, 2.6], fov: 32 }}
         onCreated={({ gl }) => {
@@ -600,17 +559,19 @@ export function SocialScene({
         />
         <Suspense fallback={null}>
           <GlassEnvironment />
-          <Rig
-            items={items}
-            reduced={reduced}
-            handleRef={handleRef}
-            onActiveChange={onActiveChange}
-          />
+          <SocialRig item={item} reduced={reduced} />
         </Suspense>
       </Canvas>
     </div>
   );
 }
 
-useGLTF.preload("/model/inst.glb");
-useGLTF.preload("/model/youtube.glb");
+for (const src of [
+  "/model/linked.glb",
+  "/model/telegram.glb",
+  "/model/github.glb",
+  "/model/inst.glb",
+  "/model/youtube.glb",
+]) {
+  useGLTF.preload(src);
+}

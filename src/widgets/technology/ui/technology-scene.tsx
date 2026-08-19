@@ -305,11 +305,22 @@ export function TechnologyScene({ groups }: { groups: TechGroup[] }) {
     });
     observer.observe(root);
 
+    let running = true;
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        running = entry.isIntersecting;
+        if (running) frame = requestAnimationFrame(tick);
+      },
+      { threshold: 0.08 },
+    );
+    visibilityObserver.observe(root);
+
     const activeNodes = () =>
       [...nodes.values()].filter((node) => node.active && node.el);
 
     let frame = 0;
     const tick = (now: number) => {
+      if (!running) return;
       const time = now / 1000;
       const width = root.clientWidth;
       const height = root.clientHeight;
@@ -415,8 +426,10 @@ export function TechnologyScene({ groups }: { groups: TechGroup[] }) {
     root.addEventListener("mouseleave", onLeave);
 
     return () => {
+      running = false;
       cancelAnimationFrame(frame);
       observer.disconnect();
+      visibilityObserver.disconnect();
       root.removeEventListener("mousemove", onMove);
       root.removeEventListener("mouseleave", onLeave);
     };

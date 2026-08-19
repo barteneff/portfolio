@@ -16,7 +16,6 @@ export function Socials({ socials: content }: SocialsProps) {
     icon: social.icon,
     color: social.color,
     model: social.model,
-    accent: social.accent,
   }));
 
   return (
