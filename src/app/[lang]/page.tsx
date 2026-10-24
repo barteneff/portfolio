@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
+import { socials } from "@/entities/social";
 import { MotionRoot } from "@/features/motion";
+import { site } from "@/shared/config";
 import { getDictionary, hasLocale } from "@/shared/i18n";
 import { Container } from "@/shared/ui";
 import { About } from "@/widgets/about";
@@ -18,9 +20,29 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
   const dict = getDictionary(lang);
 
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: site.name,
+    jobTitle: "Frontend Developer",
+    url: `${site.url}/${lang}`,
+    email: site.emailHref.replace("mailto:", ""),
+    worksFor: { "@type": "Organization", name: site.company },
+    sameAs: socials.map((social) => social.href),
+  };
+
   return (
     <MotionRoot>
-      <Header locale={lang} nav={dict.nav} viewCv={dict.viewCv} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
+      <Header
+        locale={lang}
+        nav={dict.nav}
+        menu={dict.menu}
+        viewCv={dict.viewCv}
+      />
       <Container>
         <main>
           <Hero locale={lang} hero={dict.hero} viewCv={dict.viewCv} />

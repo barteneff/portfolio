@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
+import { site } from "@/shared/config";
 import { getDictionary, hasLocale, locales } from "@/shared/i18n";
 import "../globals.css";
 
@@ -25,6 +26,7 @@ export async function generateMetadata({
   const dict = getDictionary(lang);
 
   return {
+    metadataBase: new URL(site.url),
     title: dict.meta.title,
     description: dict.meta.description,
     icons: {
@@ -36,6 +38,9 @@ export async function generateMetadata({
       title: dict.meta.title,
       description: dict.meta.description,
       type: "website",
+      siteName: site.name,
+      url: `/${lang}`,
+      locale: lang === "ru" ? "ru_RU" : "en_US",
     },
     alternates: {
       canonical: `/${lang}`,

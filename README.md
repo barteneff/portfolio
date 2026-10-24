@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ruslan Bartenev — Portfolio
 
-## Getting Started
+Персональный сайт-портфолио Frontend-разработчика с двуязычной версткой (RU / EN) и CV-страницей с возможностью печати в PDF.
 
-First, run the development server:
+Живой сайт: https://brportfolio-ashy.vercel.app
+
+## Стек
+
+- **Next.js 16** (App Router, статическая генерация по локалям)
+- **React 19**, **TypeScript**
+- **Tailwind CSS 4**
+- **Three.js** через **React Three Fiber** и **drei** (3D-сцены в hero и разделе соцсетей)
+- **GSAP** и ScrollTrigger (анимации появления)
+- Архитектура: **Feature-Sliced Design** (`entities`, `features`, `widgets`, `shared`)
+
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev     # режим разработки: http://localhost:3000
+npm run build   # production-сборка
+npm run start   # запуск собранного проекта
+npm run lint    # ESLint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Структура
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+├── app/            маршруты: [lang] (ru, en), /cv, robots.ts, sitemap.ts
+├── entities/       доменные данные (соцсети)
+├── features/       сценарии поведения (анимация появления)
+├── widgets/        крупные блоки страницы (hero, header, cv, socials…)
+├── shared/         конфиг сайта, i18n-словари, UI-примитивы
+└── proxy.ts        редирект на локаль по заголовку Accept-Language
+public/             изображения и 3D-модели (.glb)
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Локализация
 
-## Learn More
+Тексты лежат в `src/shared/i18n/dictionaries/{en,ru}.ts`. Типы в `types.ts` требуют одинакового набора ключей для обоих языков, поэтому при добавлении текста его нужно добавить в обе локали.
 
-To learn more about Next.js, take a look at the following resources:
+## Перед деплоем
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Адрес сайта задан в `src/shared/config/site.ts` (`url`). От него зависят `metadataBase`, sitemap, robots.txt и JSON-LD.

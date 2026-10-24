@@ -8,10 +8,11 @@ import { ScrollTopLink } from "./scroll-top-link";
 type HeaderProps = {
   locale: Locale;
   nav: Dictionary["nav"];
+  menu: Dictionary["menu"];
   viewCv: string;
 };
 
-export function Header({ locale, nav, viewCv }: HeaderProps) {
+export function Header({ locale, nav, menu, viewCv }: HeaderProps) {
   return (
     <header
       data-load="nav"
@@ -64,7 +65,7 @@ export function Header({ locale, nav, viewCv }: HeaderProps) {
           >
             {viewCv}
           </Link>
-          <HeaderMobileNav nav={nav} locale={locale} />
+          <HeaderMobileNav nav={nav} menu={menu} locale={locale} />
         </div>
       </Container>
     </header>

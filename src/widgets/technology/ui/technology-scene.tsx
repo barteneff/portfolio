@@ -527,12 +527,18 @@ export function TechnologyScene({ groups }: { groups: TechGroup[] }) {
     openCluster(id);
   };
 
+  // Обработчик клавиатуры берёт актуальный toggle через ref и не пересоздаётся на каждом рендере
+  const toggleRef = useRef(toggle);
+  useEffect(() => {
+    toggleRef.current = toggle;
+  });
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       const id = openIdRef.current;
       if (!id) return;
-      toggle(id);
+      toggleRef.current(id);
     };
 
     window.addEventListener("keydown", onKey);

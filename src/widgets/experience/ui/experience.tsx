@@ -25,7 +25,8 @@ export function Experience({ experience }: ExperienceProps) {
             <GlassCard
               key={project.id}
               as="article"
-              className="group p-6 max-[600px]:p-5"
+              tabIndex={0}
+              className="group p-6 outline-none focus-visible:ring-2 focus-visible:ring-text max-[600px]:p-5"
             >
               <div className="flex min-w-0 flex-1 gap-[18px]">
                 <div className="pt-1 text-xs text-muted">{project.number}</div>
@@ -33,7 +34,7 @@ export function Experience({ experience }: ExperienceProps) {
                   <h3 className="text-[25px] font-extrabold tracking-[-0.04em]">
                     {project.title}
                   </h3>
-                  <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr] max-[900px]:grid-rows-[1fr]">
+                  <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr] group-focus-visible:grid-rows-[1fr] max-[900px]:grid-rows-[1fr]">
                     <div className="overflow-hidden">
                       <ul className="mt-3 max-w-[560px] space-y-1 text-sm leading-[1.4] text-muted">
                         {project.details.map((detail) => (

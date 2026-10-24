@@ -35,6 +35,7 @@ export default async function CvPage({ params }: PageProps<"/[lang]/cv">) {
     <CvSheet
       locale={lang}
       cv={dict.cv}
+      menu={dict.menu}
       role={dict.experience.role}
       period={dict.experience.period}
     />

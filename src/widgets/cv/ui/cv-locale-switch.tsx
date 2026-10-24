@@ -2,16 +2,17 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { locales, type Locale } from "@/shared/i18n";
+import { locales, type Dictionary, type Locale } from "@/shared/i18n";
 
 const GLOBE_ICON =
   "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWdsb2JlLWljb24gbHVjaWRlLWdsb2JlIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxwYXRoIGQ9Ik0xMiAyYTE0LjUgMTQuNSAwIDAgMCAwIDIwIDE0LjUgMTQuNSAwIDAgMCAwLTIwIi8+PHBhdGggZD0iTTIgMTJoMjAiLz48L3N2Zz4=";
 
 type CvLocaleSwitchProps = {
   locale: Locale;
+  menu: Dictionary["menu"];
 };
 
-export function CvLocaleSwitch({ locale }: CvLocaleSwitchProps) {
+export function CvLocaleSwitch({ locale, menu }: CvLocaleSwitchProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -42,7 +43,7 @@ export function CvLocaleSwitch({ locale }: CvLocaleSwitchProps) {
         type="button"
         aria-expanded={open}
         aria-haspopup="true"
-        aria-label="Language"
+        aria-label={menu.language}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-line transition-opacity hover:opacity-60"
         onClick={() => setOpen((value) => !value)}
       >
@@ -55,9 +56,9 @@ export function CvLocaleSwitch({ locale }: CvLocaleSwitchProps) {
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-[0.98] opacity-0"
         }`}
-        aria-hidden={!open}
+        inert={!open}
       >
-        <div className="flex flex-col gap-0.5" role="group" aria-label="Language">
+        <div className="flex flex-col gap-0.5" role="group" aria-label={menu.language}>
           {locales.map((item) => (
             <Link
               key={item}

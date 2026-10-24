@@ -4,6 +4,11 @@ export type Dictionary = {
     description: string;
   };
   nav: { label: string; href: string }[];
+  menu: {
+    open: string;
+    close: string;
+    language: string;
+  };
   viewCv: string;
   hero: {
     eyebrow: string;
@@ -69,6 +74,7 @@ export type Dictionary = {
     summary: string;
     projects: {
       title: string;
+      description?: string;
       stack: string;
       bullets: string[];
     }[];

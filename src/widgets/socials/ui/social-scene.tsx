@@ -229,10 +229,7 @@ function GlassModel({
 }) {
   const parts = useGlassParts(item.model!);
   const fitScale = useModelFitScale(parts);
-  const profile = useMemo(
-    () => resolveGlassProfile(item),
-    [item.id, item.color],
-  );
+  const profile = useMemo(() => resolveGlassProfile(item), [item]);
 
   return (
     <group rotation={[0, FACE_Y, 0]}>
@@ -273,10 +270,7 @@ function GlassCube({
   item: SocialItem;
   fade: MutableRefObject<number>;
 }) {
-  const profile = useMemo(
-    () => resolveGlassProfile(item),
-    [item.id, item.color],
-  );
+  const profile = useMemo(() => resolveGlassProfile(item), [item]);
 
   return (
     <RoundedBox args={[0.92, 0.92, 0.92]} radius={0.07} smoothness={4}>
@@ -433,7 +427,6 @@ function SocialRig({
   reduced: boolean;
 }) {
   const pointer = useRef({ x: 0, y: 0 });
-  const shown = useRef(item);
   const [current, setCurrent] = useState(item);
   const [leaving, setLeaving] = useState<SocialItem | null>(null);
   const progress = useRef(1);
@@ -447,20 +440,15 @@ function SocialRig({
     return () => window.removeEventListener("pointermove", onMove);
   }, []);
 
-  useEffect(() => {
-    if (item.id === shown.current.id) return;
-    if (reduced) {
-      setLeaving(null);
-      shown.current = item;
-      setCurrent(item);
-      progress.current = 1;
-      return;
-    }
-    setLeaving(shown.current);
-    shown.current = item;
+  // Смена элемента: состояние пересчитываем при рендере, а не в эффекте
+  if (item.id !== current.id) {
+    setLeaving(reduced ? null : current);
     setCurrent(item);
-    progress.current = 0;
-  }, [item, reduced]);
+  }
+
+  useEffect(() => {
+    progress.current = reduced ? 1 : 0;
+  }, [current, reduced]);
 
   useFrame((_, delta) => {
     if (progress.current >= 1) return;

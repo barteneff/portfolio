@@ -10,13 +10,14 @@ const CHEVRON_LEFT_ICON =
 type CvSheetProps = {
   locale: Locale;
   cv: Dictionary["cv"];
+  menu: Dictionary["menu"];
   role: string;
   period: string;
 };
 
-export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
+export function CvSheet({ locale, cv, menu, role, period }: CvSheetProps) {
   return (
-    <div className="px-4 py-16 max-[600px]:py-10">
+    <div className="cv-page px-4 py-16 max-[600px]:py-10">
       <article className="cv-sheet mx-auto w-full max-w-[840px] bg-white px-8 py-10 shadow-[0_24px_80px_rgba(17,17,17,0.08)] max-[600px]:px-5 sm:px-12 sm:py-14">
         <div className="no-print mb-10 flex flex-wrap items-center justify-between gap-4">
           <Link
@@ -57,9 +58,9 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
               ))}
             </div>
             <div className="min-[601px]:hidden">
-              <CvLocaleSwitch locale={locale} />
+              <CvLocaleSwitch locale={locale} menu={menu} />
             </div>
-            <DownloadPdf label={cv.download} />
+            <DownloadPdf label={cv.download} href={`/cv/${locale}.pdf`} />
           </div>
         </div>
 
@@ -67,10 +68,10 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
           <h1 className="text-[clamp(40px,7vw,72px)] leading-[0.9] font-extrabold tracking-[-0.06em]">
             {site.name}
           </h1>
-          <p className="mt-3 text-lg text-muted">{role}</p>
+          <p className="mt-3 text-lg text-text/80">{role}</p>
           <div className="mt-5 flex flex-col flex-wrap gap-x-6 gap-y-1">
             {cv.contacts.map((contact) => (
-              <div key={contact.label} className="flex items-baseline gap-2 text-sm text-muted">
+              <div key={contact.label} className="flex items-baseline gap-2 text-sm text-text/80">
                 <span className="text-[11px] font-extrabold tracking-[0.08em] uppercase">
                   {contact.label}:
                 </span>
@@ -81,10 +82,10 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
         </header>
 
         <section className="border-b border-line py-8">
-          <h2 className="text-[11px] font-extrabold tracking-[0.16em] text-muted uppercase">
+          <h2 className="text-[11px] font-extrabold tracking-[0.16em] text-text/90 uppercase">
             {cv.aboutLabel}
           </h2>
-          <div className="mt-4 max-w-[640px] space-y-3 text-[15px] leading-[1.55] text-muted">
+          <div className="mt-4 max-w-[640px] space-y-3 text-[15px] leading-[1.55] text-text/80">
             {cv.about.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -92,7 +93,7 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
         </section>
 
         <section className="border-b border-line py-8">
-          <h2 className="text-[11px] font-extrabold tracking-[0.16em] text-muted uppercase">
+          <h2 className="text-[11px] font-extrabold tracking-[0.16em] text-text/90 uppercase">
             {cv.workLabel}
           </h2>
           <div className="mt-5 flex flex-wrap items-end justify-between gap-3">
@@ -100,11 +101,11 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
               <p className="text-2xl font-extrabold tracking-[-0.04em]">
                 {site.company}
               </p>
-              <p className="mt-1 text-sm text-muted">{role}</p>
+              <p className="mt-1 text-sm text-text/80">{role}</p>
             </div>
-            <p className="text-sm text-muted">{period}</p>
+            <p className="text-sm text-text/80">{period}</p>
           </div>
-          <p className="mt-4 max-w-[640px] text-[15px] leading-[1.55] text-muted">
+          <p className="mt-4 max-w-[640px] text-[15px] leading-[1.55] text-text/80">
             {cv.summary}
           </p>
           <div className="mt-8 space-y-8">
@@ -113,8 +114,13 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
                 <h3 className="text-lg font-extrabold tracking-[-0.03em]">
                   {project.title}
                 </h3>
-                <p className="mt-1 text-[12px] text-muted">{project.stack}</p>
-                <ul className="mt-3 list-disc space-y-2 pl-5 text-[14px] leading-[1.5] text-muted">
+                {project.description && (
+                  <p className="mt-2 max-w-[640px] text-[14px] leading-[1.55] text-text/80">
+                    {project.description}
+                  </p>
+                )}
+                <p className="mt-1 text-[12px] text-text/80">{project.stack}</p>
+                <ul className="mt-3 list-disc space-y-2 pl-5 text-[14px] leading-[1.5] text-text/80">
                   {project.bullets.map((bullet) => (
                     <li key={bullet}>{bullet}</li>
                   ))}
@@ -125,13 +131,13 @@ export function CvSheet({ locale, cv, role, period }: CvSheetProps) {
         </section>
 
         <section className="pt-8">
-          <h2 className="text-[11px] font-extrabold tracking-[0.16em] text-muted uppercase">
+          <h2 className="text-[11px] font-extrabold tracking-[0.16em] text-text/90 uppercase">
             {cv.skillsLabel}
           </h2>
           <div className="mt-5 grid gap-5 min-[601px]:grid-cols-2">
             {cv.skills.map((group) => (
               <div key={group.title}>
-                <h3 className="text-[11px] font-extrabold tracking-[0.12em] text-muted uppercase">
+                <h3 className="text-[11px] font-extrabold tracking-[0.12em] text-text/90 uppercase">
                   {group.title}
                 </h3>
                 <p className="mt-2 text-[14px] leading-normal">{group.items.join(" · ")}</p>

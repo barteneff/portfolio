@@ -6,6 +6,7 @@ type GlassCardProps = {
   as?: "div" | "article" | "a";
   href?: string;
   style?: React.CSSProperties;
+  tabIndex?: number;
 };
 
 export function GlassCard({
@@ -14,6 +15,7 @@ export function GlassCard({
   as = "div",
   href,
   style,
+  tabIndex,
 }: GlassCardProps) {
   const classes = cn(
     "glass rounded-3xl transition-transform duration-300",
@@ -37,7 +39,7 @@ export function GlassCard({
 
   const Tag = as === "article" ? "article" : "div";
   return (
-    <Tag className={classes} style={style}>
+    <Tag className={classes} style={style} tabIndex={tabIndex}>
       {children}
     </Tag>
   );

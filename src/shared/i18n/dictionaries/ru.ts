@@ -6,6 +6,11 @@ export const dictionary: Dictionary = {
     description:
       "Frontend-разработчик: React, Next.js, TypeScript, сложные интерфейсы, архитектура фронтенда и Web3 / DeFi.",
   },
+  menu: {
+    open: "Открыть меню",
+    close: "Закрыть меню",
+    language: "Язык",
+  },
   nav: [
     { label: "О СЕБЕ", href: "#about" },
     { label: "ОПЫТ", href: "#experience" },
@@ -45,7 +50,7 @@ export const dictionary: Dictionary = {
   experience: {
     label: "03 / Избранный опыт",
     role: "Frontend-разработчик",
-    period: "дек. 2025 — н.в.",
+    period: "04/2024 — н.в.",
     projects: [
       {
         id: "privacy-compliance",
@@ -200,84 +205,92 @@ export const dictionary: Dictionary = {
     download: "СКАЧАТЬ PDF ↗",
     aboutLabel: "Профиль",
     about: [
-      "Frontend-разработчик с коммерческим опытом разработки адаптивных кроссплатформенных веб-интерфейсов на React, Next.js и TypeScript.",
-      "Опыт в разработке сложных интерфейсов, реализации бизнес-логики, интеграции фронтенда с backend API и работе с динамическими данными и асинхронными состояниями.",
-      "Работал над Web3, DeFi и privacy-платформами: торговые интерфейсы, кросс-чейн кошельки, бриджи, пулы ликвидности, лимитные ордера и административные дашборды.",
+      "Frontend-разработчик с опытом около двух с половиной лет в области Web3 и privacy-продуктов. Разрабатываю интерфейсы для работы с кошельками, блокчейн-транзакциями и backend-API: мульти-кошельки и кросс-чейн мосты, DeFi-интерфейсы, стейкинг, приватные переводы и административные панели.",
+      "Работаю на TypeScript и React, сборка через Vite. Для UI использую Radix UI и Tailwind CSS, для управления состоянием — Redux Toolkit, TanStack Query и effector.",
     ],
     workLabel: "Опыт работы",
     summary:
-      "Разработка Web3, DeFi и privacy-платформ на React, Next.js и TypeScript.",
+      "Разработка frontend-приложений в области Web3, DeFi, кросс-чейн инфраструктуры и privacy-продуктов. Реализация сложных пользовательских сценариев, интеграция блокчейн-SDK и backend API, поддержка надёжных транзакционных потоков в нескольких сетях.",
     projects: [
       {
-        title: "Privacy & Compliance Platform",
-        stack: "React, Next.js, TypeScript, TanStack Query, Feature-Sliced Design",
+        title: "Кросс-чейн мост и стейкинг",
+        stack:
+          "React, TypeScript, Vite, Solana Wallet Adapter, RainbowKit, effector, Tailwind CSS",
         bullets: [
-          "Разработал Super Admin воркспейс: маршрутизация, выбор воркспейса, ролевой доступ и управление организациями.",
-          "Интерфейсы управления организациями и администраторами: таблицы, фильтры, диалоги, формы и детальные карточки.",
-          "Модуль KYT Monitoring: фильтрация транзакций, управление статусами, детальные экраны и настройки провайдера.",
-          "Интеграция фронтенда с backend API через TanStack Query.",
-          "Loading и UX-состояния: скелетоны, пагинация, диалоги и квитанции транзакций.",
-          "Feature-Sliced Design и доступ по правам в многоуровневой архитектуре воркспейсов.",
+          "Разработал интерфейсы кросс-чейн моста между сетями Bitcoin, Solana и EVM, а также функциональность стейкинга.",
+          "Реализовал подключение кошельков, отслеживание статуса транзакций, проверку газа и расчёт переводов с учётом комиссий.",
+          "Добавил polling подтверждений транзакций в Solana и дедупликацию запросов для снижения избыточных вызовов backend-сервисов транзакций.",
+          "Улучшил интерфейсы кошельков и blockchain explorer: определение кошелька, сценарии установки расширения, отображение данных транзакций.",
         ],
       },
       {
-        title: "Cross-Chain Wallet & Bridge",
-        stack: "React, Next.js, TypeScript, Web3",
+        title: "Мультикошелёк и кросс-чейн инфраструктура",
+        stack:
+          "React, TypeScript, wagmi, viem, Solana Wallet Adapter, LI.FI",
         bullets: [
-          "Работа с EVM, Solana, Bitcoin и Liquid кошельками.",
-          "Подключение и управление кошельками с интеграцией с backend.",
-          "Интерфейсы для различных сценариев транзакций.",
-          "Дашборд портфеля: карточки активов, балансы и навигация.",
-          "Explorer: адаптивная вёрстка, loading-состояния и обработка ошибок.",
+          "Разработал унифицированный контроллер кошельков с поддержкой EVM, Solana, Bitcoin и Liquid: определение сети, получение балансов, управление состоянием кошелька.",
+          "Интегрировал LI.FI для кросс-чейн маршрутизации и реализовал сценарии транзакций с состояниями загрузки, успеха и ошибки.",
+          "Создал интерфейсы explorer для отображения транзакций и данных по сетям.",
         ],
       },
       {
-        title: "DeFi Trading Platform",
-        stack: "React, Next.js, TypeScript, Web3, DeFi",
+        title: "DeFi-интерфейсы торговли",
+        stack:
+          "React, TypeScript, Redux Toolkit, TanStack Query, Uniswap SDK, Highcharts, lightweight-charts",
         bullets: [
-          "Адаптивные интерфейсы Swap, Bridge, Limit Orders и Liquidity Pools.",
-          "Интерфейсы торговых соревнований и лидербордов по объёму.",
-          "Работа с динамическими торговыми данными и сложными UI-состояниями.",
-          "Реализация бизнес-логики Web3 торговых сценариев.",
+          "Разработал интерфейсы свопа и пулов ликвидности: расчёт котировок, выбор маршрута, подтверждение транзакций.",
+          "Реализовал управление лимит-ордерами: создание, отмену и отслеживание статуса.",
+          "Создал торговые дашборды, интерактивные графики, лидерборды и механики ежедневной активности.",
+          "Оптимизировал загрузку данных и управление состоянием интерфейса для снижения избыточных запросов и повышения отзывчивости.",
+        ],
+      },
+      {
+        title: "Privacy и платёжная платформа",
+        stack:
+          "React, TypeScript, Vite, Radix UI, Redux Toolkit, TanStack Query, React Hook Form, Jest",
+        bullets: [
+          "Разработал интерфейсы платёжного приложения и административные инструменты для аудита и настроек.",
+          "Реализовал сценарии приватных переводов с интеграцией кошельков, управлением доступными нотами, проверками KYT и поддержкой EVM-адресов.",
+          "Участвовал в автоматизированном тестировании escrow-сценариев и интеграции frontend с контрактами и SDK блокчейна.",
         ],
       },
     ],
     skillsLabel: "Технические навыки",
     skills: [
       {
-        title: "Основное",
-        items: ["JavaScript", "TypeScript", "React", "Next.js", "HTML5", "CSS3"],
+        title: "Языки",
+        items: ["TypeScript", "JavaScript", "HTML5", "CSS3", "SCSS"],
+      },
+      {
+        title: "Фреймворки и сборка",
+        items: ["React", "Next.js", "Vite", "React Router"],
       },
       {
         title: "Стейт и данные",
-        items: ["Redux", "Redux Toolkit", "Zustand", "TanStack Query", "REST API"],
-      },
-      {
-        title: "Формы и валидация",
-        items: ["React Hook Form", "Zod"],
+        items: ["Redux Toolkit", "TanStack Query", "effector", "REST API"],
       },
       {
         title: "UI и стилизация",
-        items: ["Tailwind CSS", "SCSS", "Material UI", "Ant Design", "NextUI", "shadcn/ui"],
+        items: ["Radix UI", "shadcn/ui", "Tailwind CSS", "lucide-react", "React Hook Form", "i18next"],
       },
       {
-        title: "Архитектура",
-        items: ["Feature-Sliced Design", "Design Systems", "Microfrontends"],
+        title: "Web3 / блокчейн",
+        items: ["wagmi", "viem", "Solana Wallet Adapter", "RainbowKit", "LI.FI", "Uniswap SDK", "Freighter", "Groth16"],
       },
       {
-        title: "Web3 / DeFi",
-        items: ["Wallet Integration", "Swap", "Bridge", "Liquidity Pools", "Limit Orders", "Uniswap", "Web3"],
+        title: "Смежное",
+        items: ["NestJS", "Fastify", "Move (Sui)", "Solidity-тесты", "Gherkin"],
       },
       {
         title: "Инструменты",
-        items: ["Git", "GitHub", "Vite", "Webpack"],
+        items: ["Jira", "GitHub", "GitLab CI", "DigitalOcean", "Jest", "ESLint"],
       },
     ],
     contactLabel: "Контакт",
     contacts: [
       { label: "Telegram", value: "@bartenevv_r" },
-      { label: "Email", value: "bartenevv.rsn@gmail.com / barteneffrus@yandex.com" },
-      { label: "GitHub", value: "github.com/barteneff / Старый профиль: github.com/barteneffrus" },
+      { label: "Email", value: "bartenevv.rsn@gmail.com" },
+      { label: "GitHub", value: "github.com/barteneff" },
     ],
   },
 };

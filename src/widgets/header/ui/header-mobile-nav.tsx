@@ -6,10 +6,11 @@ import { locales, type Dictionary, type Locale } from "@/shared/i18n";
 
 type HeaderMobileNavProps = {
   nav: Dictionary["nav"];
+  menu: Dictionary["menu"];
   locale: Locale;
 };
 
-export function HeaderMobileNav({ nav, locale }: HeaderMobileNavProps) {
+export function HeaderMobileNav({ nav, menu, locale }: HeaderMobileNavProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +41,7 @@ export function HeaderMobileNav({ nav, locale }: HeaderMobileNavProps) {
         type="button"
         aria-expanded={open}
         aria-haspopup="true"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? menu.close : menu.open}
         className="flex h-10 w-10 items-center justify-center rounded-full border border-line transition-opacity hover:opacity-60"
         onClick={() => setOpen((value) => !value)}
       >
@@ -69,7 +70,7 @@ export function HeaderMobileNav({ nav, locale }: HeaderMobileNavProps) {
             ? "pointer-events-auto scale-100 opacity-100"
             : "pointer-events-none scale-[0.98] opacity-0"
         }`}
-        aria-hidden={!open}
+        inert={!open}
       >
         <nav className="flex flex-col">
           {nav.map((item) => (
@@ -88,7 +89,7 @@ export function HeaderMobileNav({ nav, locale }: HeaderMobileNavProps) {
           <div
             className="flex items-center gap-1 px-1"
             role="group"
-            aria-label="Language"
+            aria-label={menu.language}
           >
             {locales.map((item) => (
               <Link

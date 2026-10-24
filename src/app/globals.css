@@ -75,10 +75,24 @@ a {
     display: none !important;
   }
 
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  .cv-page {
+    padding: 0 !important;
+  }
+
   .cv-sheet {
     max-width: none;
     margin: 0;
-    padding: 0;
+    padding: 0 !important;
     box-shadow: none;
+    zoom: 0.96;
+  }
+
+  .cv-sheet .space-y-8 > div {
+    break-inside: avoid;
   }
 }

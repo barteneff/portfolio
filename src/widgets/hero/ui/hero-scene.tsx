@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useLayoutEffect, useRef } from "react";
+import { Suspense, useLayoutEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Bounds,
@@ -14,16 +14,29 @@ import {
 import * as THREE from "three";
 
 const MODEL_SRC = "/model/user.glb";
-const PHOTO_SRC = "/test-photo.jpg";
+const PHOTO_SRC = "/hero-photo.jpg";
 
 useGLTF.preload(MODEL_SRC);
 useTexture.preload(PHOTO_SRC);
 
+// Текстура из кэша drei общая, поэтому настраиваем её клон, а не исходный объект
+function usePhotoTexture() {
+  const source = useTexture(PHOTO_SRC);
+
+  return useMemo(() => {
+    const photo = source.clone();
+    photo.colorSpace = THREE.SRGBColorSpace;
+    photo.wrapS = THREE.ClampToEdgeWrapping;
+    photo.wrapT = THREE.ClampToEdgeWrapping;
+    photo.needsUpdate = true;
+    return photo;
+  }, [source]);
+}
+
 function GlassUser() {
   const { nodes } = useGLTF(MODEL_SRC);
-  const photo = useTexture(PHOTO_SRC);
+  const photo = usePhotoTexture();
   const plane = nodes.Plane as THREE.Mesh;
-  photo.colorSpace = THREE.SRGBColorSpace;
 
   return (
     <Center>
@@ -51,10 +64,7 @@ function GlassUser() {
 }
 
 function PhotoEnvironment() {
-  const photo = useTexture(PHOTO_SRC);
-  photo.colorSpace = THREE.SRGBColorSpace;
-  photo.wrapS = THREE.ClampToEdgeWrapping;
-  photo.wrapT = THREE.ClampToEdgeWrapping;
+  const photo = usePhotoTexture();
 
   return (
     <Environment frames={1} resolution={128} environmentIntensity={1.5}>

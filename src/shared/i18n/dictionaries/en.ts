@@ -6,6 +6,11 @@ export const dictionary: Dictionary = {
     description:
       "Frontend Developer specializing in React, Next.js, TypeScript, complex interfaces, frontend architecture and Web3 / DeFi.",
   },
+  menu: {
+    open: "Open menu",
+    close: "Close menu",
+    language: "Language",
+  },
   nav: [
     { label: "ABOUT", href: "#about" },
     { label: "WORK", href: "#experience" },
@@ -46,7 +51,7 @@ export const dictionary: Dictionary = {
   experience: {
     label: "03 / Selected Experience",
     role: "Frontend Developer",
-    period: "DEC 2025 — PRESENT",
+    period: "04/2024 — PRESENT",
     projects: [
       {
         id: "privacy-compliance",
@@ -201,83 +206,87 @@ export const dictionary: Dictionary = {
     download: "DOWNLOAD PDF ↗",
     aboutLabel: "Profile",
     about: [
-      "Frontend Developer with commercial experience building responsive, cross-platform web interfaces with React, Next.js and TypeScript.",
-      "Experienced in developing complex interfaces, implementing business logic, integrating frontend with backend APIs, and working with dynamic data and asynchronous states.",
-      "Worked on Web3, DeFi and privacy-focused platforms, including trading interfaces, cross-chain wallets, bridges, liquidity pools, limit orders and admin dashboards.",
+      "Frontend Developer with about two and a half years of experience in Web3 and privacy-focused products. I build interfaces that work with wallets, blockchain transactions and backend APIs: multi-wallet and cross-chain bridges, DeFi interfaces, staking, private transfers and administrative panels.",
+      "I work with TypeScript and React, building with Vite. For UI I use Radix UI and Tailwind CSS; for state management, Redux Toolkit, TanStack Query and effector.",
     ],
     workLabel: "Work Experience",
     summary:
-      "Developing Web3, DeFi and privacy-focused platforms using React, Next.js and TypeScript.",
+      "Developing frontend applications for Web3, DeFi, cross-chain infrastructure and privacy-focused products. Responsible for implementing complex UI workflows, integrating blockchain SDKs and backend APIs, and maintaining reliable transaction flows across multiple networks.",
     projects: [
       {
-        title: "Privacy & Compliance Platform",
-        stack: "React, Next.js, TypeScript, TanStack Query, Feature-Sliced Design",
+        title: "Cross-Chain Bridge & Staking Platform",
+        stack: "React, TypeScript, Vite, Solana Wallet Adapter, RainbowKit, effector, Tailwind CSS",
         bullets: [
-          "Developed a Super Admin workspace with routing, workspace selection, role-based access and organization management.",
-          "Built interfaces for managing organizations and administrators, including tables, filters, dialogs, forms and detailed views.",
-          "Developed a KYT Monitoring module with transaction filtering, status management, detailed transaction views and provider configuration.",
-          "Integrated frontend applications with backend APIs using TanStack Query.",
-          "Implemented loading and operation states including skeletons, pagination, dialogs and transaction receipts.",
-          "Applied Feature-Sliced Design and permission-based access control within a multi-level workspace architecture.",
+          "Developed frontend interfaces for a cross-chain bridge connecting Bitcoin, Solana, and EVM networks, along with staking functionality.",
+          "Implemented wallet connectivity, transaction status tracking, gas validation, and fee-aware transfer calculations.",
+          "Added Solana transaction confirmation polling and request deduplication to reduce redundant calls to backend transaction services.",
+          "Improved wallet and blockchain explorer interfaces, including wallet detection, extension installation flows, and transaction data presentation.",
         ],
       },
       {
-        title: "Cross-Chain Wallet & Bridge",
-        stack: "React, Next.js, TypeScript, Web3",
+        title: "Multi-Wallet & Cross-Chain Infrastructure",
+        stack: "React, TypeScript, wagmi, viem, Solana Wallet Adapter, LI.FI",
         bullets: [
-          "Worked with EVM, Solana, Bitcoin and Liquid wallets.",
-          "Implemented wallet connection and management flows integrated with the backend.",
-          "Developed interfaces for different transaction scenarios.",
-          "Built a portfolio dashboard with asset cards, balances and application navigation.",
-          "Developed an Explorer interface with responsive layouts, loading states and error handling.",
+          "Developed a unified wallet controller supporting EVM, Solana, Bitcoin, and Liquid, centralizing network detection, balance retrieval, and wallet state management.",
+          "Integrated LI.FI for cross-chain routing and implemented transaction flows with loading, success, and error states.",
+          "Built blockchain explorer interfaces for displaying transaction data and network-specific information.",
         ],
       },
       {
-        title: "DeFi Trading Platform",
-        stack: "React, Next.js, TypeScript, Web3, DeFi",
+        title: "DeFi Trading Interfaces",
+        stack: "React, TypeScript, Redux Toolkit, TanStack Query, Uniswap SDK, Highcharts, lightweight-charts",
         bullets: [
-          "Developed responsive interfaces for Swap, Bridge, Limit Orders and Liquidity Pools.",
-          "Built interfaces for trading competitions and volume-based leaderboards.",
-          "Worked with dynamic trading data and complex UI states.",
-          "Implemented business logic for Web3 trading workflows.",
+          "Developed swap and liquidity pool interfaces with quote calculations, route selection, and transaction confirmation flows.",
+          "Implemented limit order management, including order creation, cancellation, and status tracking.",
+          "Built trading dashboards, interactive charts, leaderboards, and daily engagement mechanics.",
+          "Optimized data fetching and UI state management to reduce redundant requests and improve interface responsiveness.",
+        ],
+      },
+      {
+        title: "Privacy & Payments Platform",
+        stack: "React, TypeScript, Vite, Radix UI, Redux Toolkit, TanStack Query, React Hook Form, Jest",
+        bullets: [
+          "Developed payment application interfaces and administrative tools for audit and configuration workflows.",
+          "Implemented private transfer flows with wallet integration, available-note management, KYT checks, and EVM address support.",
+          "Contributed to automated testing of escrow scenarios and frontend integration with blockchain contracts and SDKs.",
         ],
       },
     ],
     skillsLabel: "Technical Skills",
     skills: [
       {
-        title: "Core",
-        items: ["JavaScript", "TypeScript", "React", "Next.js", "HTML5", "CSS3"],
+        title: "Languages",
+        items: ["TypeScript", "JavaScript", "HTML5", "CSS3", "SCSS"],
       },
       {
-        title: "State Management & Data",
-        items: ["Redux", "Redux Toolkit", "Zustand", "TanStack Query", "REST API"],
+        title: "Frameworks & Build",
+        items: ["React", "Next.js", "Vite", "React Router"],
       },
       {
-        title: "Forms & Validation",
-        items: ["React Hook Form", "Zod"],
+        title: "State & Data",
+        items: ["Redux Toolkit", "TanStack Query", "effector", "REST API"],
       },
       {
         title: "UI & Styling",
-        items: ["Tailwind CSS", "SCSS", "Material UI", "Ant Design", "NextUI", "shadcn/ui"],
+        items: ["Radix UI", "shadcn/ui", "Tailwind CSS", "lucide-react", "React Hook Form", "i18next"],
       },
       {
-        title: "Architecture",
-        items: ["Feature-Sliced Design", "Design Systems", "Microfrontends"],
+        title: "Web3 / Blockchain",
+        items: ["wagmi", "viem", "Solana Wallet Adapter", "RainbowKit", "LI.FI", "Uniswap SDK", "Freighter", "Groth16"],
       },
       {
-        title: "Web3 / DeFi",
-        items: ["Wallet Integration", "Swap", "Bridge", "Liquidity Pools", "Limit Orders", "Uniswap", "Web3"],
+        title: "Related",
+        items: ["NestJS", "Fastify", "Move (Sui)", "Solidity tests", "Gherkin"],
       },
       {
-        title: "Tooling",
-        items: ["Git", "GitHub", "Vite", "Webpack"],
+        title: "Tools",
+        items: ["Jira", "GitHub", "GitLab CI", "DigitalOcean", "Jest", "ESLint"],
       },
     ],
     contactLabel: "Contact",
     contacts: [
       { label: "Telegram", value: "@bartenevv_r" },
-      { label: "Email", value: "bartenevv.rsn@gmail.com / barteneffrus@yandex.com" },
+      { label: "Email", value: "bartenevv.rsn@gmail.com" },
       { label: "GitHub", value: "github.com/barteneff" },
     ],
   },

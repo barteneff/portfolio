@@ -1,5 +1,6 @@
 export const site = {
   name: "Ruslan Bartenev",
+  url: "https://brportfolio-ashy.vercel.app",
   firstName: "RUSLAN",
   lastName: "BARTENEV",
   shortName: "RB / FRONTEND",
